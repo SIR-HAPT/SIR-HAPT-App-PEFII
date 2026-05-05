@@ -31,6 +31,7 @@ bld/
 [Oo]bj/
 [Ll]og/
 [Ll]ogs/
+build/
 
 # Visual Studio 2015/2017 cache/options directory
 .vs/
@@ -400,6 +401,6 @@ FodyWeavers.xsd
 # JetBrains Rider
 *.sln.iml
 
-# Firebase service account key (DO NOT COMMIT)
+# Firebase service account key
 serviceAccountKey_mrgame-pefii-v2-firebase-adminsdk.json
 sir-hapt-firebase-adminsdk-fbsvc-baadfe4250.json
