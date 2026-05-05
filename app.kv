@@ -1,0 +1,1095 @@
+MDScreenManager:
+    id: screen_manager
+    
+    LogIn:
+        name: "login"
+    Dashboard:
+        name: "dashboard"
+
+# ----------------------------------------------------------------------
+# ---------- PANTALLA DE INICIO DE SESION -----------------------------
+# ----------------------------------------------------------------------
+<LogIn>:
+    MDCard:
+        size_hint: None, None
+        size: 500, 650  
+        pos_hint: {"center_x": 0.5, "center_y": 0.5}
+        elevation: 2
+        padding: 25
+        spacing: 25
+        orientation: 'vertical'
+    
+        MDLabel:
+            id: welcome_label
+            text: "Gestor de terapias:\nInicio de sesión"
+            bold: True
+            font_size: 40
+            halign: 'center'
+            size_hint_y: None
+            height: self.texture_size[1]
+            padding_y: 15
+        
+        MDTextField:
+            id: user
+            hint_text: "Correo electrónico"
+            icon_right: "account"
+            size_hint_x: None
+            width: 400
+            font_size: 18
+            pos_hint: {"center_x": 0.5}
+        
+        MDRelativeLayout:
+            size_hint_x: None
+            width: 400  # El mismo ancho que tenías en tu TextField
+            size_hint_y: None
+            height: dp(48) # Altura estándar de un TextField
+            pos_hint: {"center_x": 0.5}
+            
+            MDTextField:
+                id: password
+                hint_text: "Contraseña"
+        
+                size_hint_x: 1 
+                font_size: 18
+                password: True
+                pos_hint: {"center_y": 0.5} 
+
+            MDIconButton:
+                id: eye_btn
+                icon: "eye-off"
+                pos_hint: {"right": 1, "center_y": 0.5}
+                theme_text_color: "Hint" 
+                on_release: root.toggle_password_visibility()
+
+        MDTextButton:
+            text: "¿Olvidó su contraseña?"
+            font_size: 20
+            theme_text_color: "Custom"
+            text_color: app.theme_cls.primary_light
+            pos_hint: {"center_x": 0.5}
+            size_hint_x: 0.5
+            on_press: root.forgot_password()
+
+        MDFillRoundFlatButton:
+            text: "Ingresar"
+            font_size: 20
+            pos_hint: {"center_x": 0.5}
+            size_hint_x: 0.8
+            on_press: root.login()  
+
+        MDRoundFlatButton:
+            text: "Registrarse"
+            font_size: 20
+            pos_hint: {"center_x": 0.5}
+            size_hint_x: 0.8
+            on_press: root.register_user()  
+        
+        MDLabel:
+            id: warning_label
+            text: ""
+            font_size: 16
+            halign: 'center'
+            size_hint_y: None
+            height: 40
+            padding_y: 10
+            theme_text_color: "Custom"
+            text_color: 1, 0, 0, 1
+
+# ----------------------------------------------------------------------
+# ---------- DASHBOARD PRINCIPAL  ------------------------------------------
+# ----------------------------------------------------------------------
+<Dashboard>:
+    MDBoxLayout:
+        orientation: 'horizontal'
+        size: root.width, root.height
+        
+        # - FIJA Barra de navegacion  -----------------------------------------     
+        MDNavigationRail:
+            id: rail
+            anchor: "top"
+            type: "selected"
+            text_color_item_normal: app.theme_cls.opposite_text_color
+            icon_color_item_normal: app.theme_cls.primary_light
+            icon_color_item_active: app.theme_cls.opposite_text_color
+            text_color_item_active: app.theme_cls.opposite_text_color
+            md_bg_color: app.theme_cls.opposite_bg_light
+
+            MDNavigationRailItem:
+                icon: "home"
+                text: "Inicio"
+                on_release: 
+                    screen_manager2.current = "home"
+                    screen_manager2.transition.direction = "right"
+
+            #MDNavigationRailItem:
+                #icon: "account"
+                #text: "Cuenta"
+                #on_release: 
+                #    screen_manager2.current = "conf"
+                #    screen_manager2.transition.direction ="right"
+
+            MDNavigationRailItem:
+                icon: "account-details"
+                text: "Pacientes"
+                on_release: 
+                    screen_manager2.current = "patients"
+                    screen_manager2.transition.direction ="right"
+
+            MDNavigationRailItem:
+                icon: "information"
+                text: "Información"
+                on_release: 
+                    screen_manager2.current = "info"
+                    screen_manager2.transition.direction ="right"
+
+            MDNavigationRailItem:
+                icon: "logout"
+                text: "Salir Sesión"
+                on_release: root.logout()
+        
+        # - Zona de Cambio de Pantallas MDScreenManager ------------------------
+        MDScreenManager:
+            id: screen_manager2
+            Home:
+                name: "home"
+            Patients:
+                name: "patients"
+            Details_Patient:
+                name: "details"
+            New_Patient:
+                name: "newpatient"
+            Information:
+                name: "info"
+            Configuration:
+                name: "conf"
+
+# ----------------------------------------------------------------------
+# - PANTALLA DE INICIO  ------------------------------------------------
+# ----------------------------------------------------------------------
+# PTE - ARREGLAR BUGS DE DIMENSIONES
+<Home>:
+    MDBoxLayout:
+        orientation: "vertical"
+
+        # -- BARRA SUPERIOR ----------------------------------- PTE - ARREGLAR BUGS DE DIMENSIONES
+        MDGridLayout:
+            cols: 3
+            padding: 50
+            spacing: 20
+
+            size_hint_y: 0.2
+            height: 150
+            md_bg_color: app.theme_cls.primary_light
+
+            # --- ICONO A LA IZQUIERDA ---------------------------
+            AnchorLayout:
+                size_hint_x: 0.15
+                anchor_x: "center"
+                anchor_y: "center"
+                MDIcon:
+                    icon: "account-circle"
+                    font_size: 100
+                    color: app.theme_cls.text_color
+
+
+            # --- CONTENEDOR DE TEXTOS A LA DERECHA -------------------
+            GridLayout:
+                rows: 2   
+                spacing: 45
+                size_hint_x: 0.75
+                size_hint_y: None
+                height: self.minimum_height
+
+                MDLabel:
+                    size_hint_y: 0.6
+                    id: terapeuta_nombre
+                    text: "Nombre del terapeuta"
+                    font_style: "H4"
+                    halign: "left"
+                    valign: "center"
+
+                MDLabel:
+                    id: terapeuta_email
+                    text: "Correo: correo@gmail.com"
+                    font_style: "H6"
+                    halign: "left"
+                    valign: "center"
+            
+            # --- HORA Y FECHA  --------------------------------------  
+            BoxLayout:
+                orientation: 'vertical'
+                size_hint: None, None
+                width: 180
+                height: 60
+                spacing: 5
+                pos_hint: {"center_y": 0.5}
+                
+                MDLabel:
+                    id: hora_label
+                    text: "14:30:45"
+                    font_style: "H4"
+                    bold: True
+                    halign: "right"
+                    valign: "bottom"
+                    size_hint_y: None
+                    height: self.texture_size[1]
+
+                MDLabel:
+                    id: fecha_label
+                    text: "21 noviembre 2025"
+                    font_style: "Caption"
+                    halign: "right"
+                    valign: "bottom"
+                    size_hint_y: None
+                    height: self.texture_size[1]
+
+        # -------- ZONA CENTRAL -------- PTE - ARREGLAR BUGS DE DIMENSIONES
+        # poner aqui las cards de ver pacientes, nuevo paciente o nueva sesion (por ahora, ver si lo dejo asi)!! ------------------------------------------      
+        MDBoxLayout:
+            orientation: "vertical"
+            spacing: 20
+            padding: 50
+            size_hint_y: 0.7
+            
+            MDLabel:
+                text: "Gestión de Pacientes"
+                font_style: "H5"
+                adaptive_height: True
+            
+            # Ir a la pagina de pacientes -----------
+            MDCard:
+                orientation: "vertical"
+                size_hint_y: None
+                height: dp(100)
+                padding: dp(16)
+                spacing: dp(8)
+                elevation: 2
+                ripple_behavior: True
+                on_release: root.ir_a_pacientes()
+                
+                MDLabel:
+                    text: "Ver Pacientes"
+                    font_style: "H6"
+                    adaptive_height: True
+                
+                MDLabel:
+                    text: "Lista completa de pacientes registrados"
+                    font_style: "Caption"
+                    adaptive_height: True
+            
+            # Ir a la pagina de nuevo paciente -----------
+            MDCard:
+                orientation: "vertical"
+                size_hint_y: None
+                height: dp(100)
+                padding: dp(16)
+                spacing: dp(8)
+                elevation: 2
+                ripple_behavior: True
+                on_release: root.abrir_nuevo_paciente()
+                
+                MDLabel:
+                    text: "Nuevo Paciente"
+                    font_style: "H6"
+                    adaptive_height: True
+                
+                MDLabel:
+                    text: "Registrar un nuevo paciente"
+                    font_style: "Caption"
+                    adaptive_height: True
+            
+            Widget:
+                size_hint_y: None
+                height: 160
+            
+            #MDLabel:
+            #    text: "Sesiones"
+            #    font_style: "H5"
+            #    adaptive_height: True
+            
+            # ??????????? -----------
+            #MDCard:
+            #    orientation: "vertical"
+            #    size_hint_y: None
+            #    height: dp(100)
+            #    padding: dp(16)
+            #    spacing: dp(8)
+            #    elevation: 2
+            #    ripple_behavior: True
+            #    # on_release: PENDIENTE - aun no se que ponerle
+                
+            #    MDLabel:
+            #        text: "Iniciar Sesión"
+            #        font_style: "H6"
+            #        adaptive_height: True
+                
+            #    MDLabel:
+            #        text: "Comenzar una nueva sesión de rehabilitación"
+            #        font_style: "Caption"
+            #        adaptive_height: True
+
+# ----------------------------------------------------------------------
+# - PANTALLA DE BÚSQUEDA  ------------------------------------------------
+# ----------------------------------------------------------------------
+<Patients>:
+    MDBoxLayout:
+        orientation: "vertical"
+        id: center_zone
+        padding: 50
+        spacing: 20
+
+        MDBoxLayout:
+            orientation: "horizontal"
+            size_hint_y: None
+            height: 20
+            spacing: 10
+
+            MDTextField:
+                id: search_field
+                mode: "round"
+                icon_left: "magnify"
+                hint_text: "Buscar paciente por ID"
+                size_hint_x: 0.75
+                pos_hint: {"center_x": 0.5, "center_y": 0.5}
+                on_text: root.buscar_paciente(self.text)
+
+            AnchorLayout:
+                size_hint_x: 0.15
+                anchor_x: "center"
+                anchor_y: "center"
+
+                MDIconButton:
+                    icon: "head-plus"
+                    icon_size: "50sp"
+                    on_release: root.abrir_nuevo_paciente()
+
+        Widget:
+            size_hint_y: 0.05
+
+        MDCard:
+            size_hint: 0.95, 1
+            size: 750, 450 
+            pos_hint: {"center_x": 0.5}   
+            padding: 10
+            spacing: 10
+            elevation: 1                 
+            radius: [10,]
+
+            MDBoxLayout:
+                orientation: "vertical"
+                spacing: 5
+
+                # --- Header con botón de refresh ---
+                MDBoxLayout:
+                    orientation: "horizontal"
+                    size_hint_y: None
+                    height: dp(30)
+                    padding: [5, 0]
+                    spacing: 10
+
+                    MDLabel:
+                        text: "Lista de Pacientes"
+                        font_style: "Subtitle1"
+                        bold: True
+                        size_hint_x: 0.8
+
+                    MDIconButton:
+                        icon: "refresh"
+                        icon_size: "28sp"
+                        size_hint_x: None
+                        width: dp(40)
+                        pos_hint: {"center_y": 0.5}
+                        theme_icon_color: "Custom"
+                        icon_color: app.theme_cls.primary_color
+                        on_release: root.cargar_pacientes()
+
+                # --- Lista de pacientes ---
+                MDScrollView:
+                    MDList:
+                        id: patients_list
+
+
+# ----------------------------------------------------------------------
+# - PANTALLA DE NUEVO PACIENTE   ---------------------------------------
+# ----------------------------------------------------------------------
+<New_Patient>:
+    name: "newpatient"
+    
+    MDBoxLayout:
+        orientation: 'vertical'
+        md_bg_color: app.theme_cls.bg_light
+        
+        MDBoxLayout:
+            orientation: 'horizontal'
+            padding: [40, 30]
+            spacing: 30
+            
+          # --- Formulario --------------------------
+            MDBoxLayout:
+                orientation: 'vertical'
+                size_hint: 0.6, 1
+                padding: 5
+                spacing: 30
+
+                #------ Título------
+                MDLabel:
+                    text: "Registrar Nuevo Paciente"
+                    font_style: "H4"
+                    halign: "center"
+                    size_hint_y: 0.15
+                    color: app.theme_cls.primary_dark
+                    bold: True
+                
+                
+                # ------Campos del formulario ------
+                MDTextField:
+                    id: nombre_field
+                    hint_text: "Nombre(s) *"
+                    mode: "fill"
+                    icon_left: "account"
+                    helper_text: "Campo obligatorio"
+                    helper_text_mode: "on_error"
+                    size_hint_y: 0.1
+                
+                MDTextField:
+                    id: apellido_field
+                    hint_text: "Apellido(s) *"
+                    mode: "fill"
+                    icon_left: "account-details"
+                    helper_text: "Campo obligatorio"
+                    helper_text_mode: "on_error"
+                    size_hint_y: 0.1
+                
+                MDTextField:
+                    id: nacimiento
+                    hint_text: "Fecha de nacimiento"
+                    mode: "fill"
+                    helper_text: "Ingrese fecha de nacimiento válida, en formato dd/mm/yyyy"
+                    icon_left: "calendar"
+                    validator: "date"
+                    date_format: "dd/mm/yyyy"
+                    size_hint_y: 0.1
+                
+                MDTextField:
+                    id: diagnostico_field
+                    hint_text: "Diagnóstico y comentarios"
+                    mode: "fill"
+                    icon_left: "clipboard-text"
+                    multiline: True
+                    size_hint_y: None
+                    height: 120
+                    helper_text: "Información clínica relevante"
+                    helper_text_mode: "on_focus"
+                    size_hint_y: 0.1
+                
+                # Nota de campos obligatorios
+                MDLabel:
+                    text: "* Campos obligatorios"
+                    font_style: "Caption"
+                    theme_text_color: "Hint"
+                    halign: "left"
+                    size_hint_y: None
+                    height: 20
+            
+          # -- Progrmacion de las sesiones --------------
+          #  FloatLayout:
+          #      size_hint_x: 0.4
+          #      
+          #      MDCard:
+          #          orientation: 'vertical'
+          #          size_hint: 0.95 , 0.3
+          #          pos_hint: {"center_x": 0.5, "center_y": 0.5}
+          #          padding: 25
+          #          spacing: 20
+           #         elevation: 3
+            #        radius: [15,]
+            #        
+            #        MDLabel:
+            #            text: "Sesiones Programadas"
+            #            font_style: "H6"
+            #            bold: True
+            #            halign: "center"
+            #            size_hint_y: None
+            #            height: 40
+            #        
+            #        # Contador de sesiones
+            #        MDBoxLayout:
+            #            orientation: 'horizontal'
+            #            size_hint_y: None
+            #            height: 80
+            #            spacing: 20
+            #            pos_hint: {"center_x": 0.5}
+            #            
+            #            MDIconButton:
+            #                icon: "minus-circle"
+            #                icon_size: "30sp"
+            #                pos_hint: {"center_y": 0.5}
+            #                on_release: root.decrementar_sesiones()
+            #            
+            #            MDLabel:
+            #                id: sesiones_label
+            #                text: "0"
+            #                font_style: "H5"
+            #                bold: True
+            #                halign: "center"
+            #                pos_hint: {"center_y": 0.5}
+            #            
+            #            MDIconButton:
+            #                icon: "plus-circle"
+            #                icon_size: "30sp"
+            #                pos_hint: {"center_y": 0.5}
+            #                on_release: root.incrementar_sesiones()
+                
+                    
+        # -- BARRA INFERIOR: Botones de acción -----------------------------------------------------------------
+        MDBoxLayout:
+            orientation: 'horizontal'
+            size_hint_y: None
+            height: 100
+            padding: [40, 20]
+            spacing: 20
+            md_bg_color: app.theme_cls.bg_normal
+            
+            MDRoundFlatButton:
+                text: "Cancelar"
+                icon: "close"
+                font_size: "18sp"
+                size_hint_x: 0.3
+                pos_hint: {"center_y": 0.5}
+                on_release: root.cancelar()
+            
+            Widget:
+            
+            MDFillRoundFlatButton:
+                text: "Guardar Paciente"
+                icon: "content-save"
+                font_size: "18sp"
+                size_hint_x: 0.4
+                pos_hint: {"center_y": 0.5}
+                md_bg_color: app.theme_cls.primary_color
+                on_release: root.guardar_paciente()
+
+# ----------------------------------------------------------------------
+# - PANTALLA DE PACIENTES  ---------------------------------------------
+# ----------------------------------------------------------------------
+<Details_Patient>:
+    MDBoxLayout:
+        orientation: "vertical"
+
+        # -- BARRA SUPERIOR CON BOTONES ------------------------------
+        MDBoxLayout:
+            id: topbar
+            size_hint_y: None
+            height: dp(60)
+            orientation: "horizontal"
+            padding: [10, 10]
+            spacing: 10
+            md_bg_color: app.theme_cls.bg_light
+
+            MDIconButton:
+                icon: "arrow-left"
+                icon_size: "28sp"
+                size_hint_x: None
+                width: dp(48)
+                pos_hint: {"center_y": 0.5}
+                theme_icon_color: "Custom"
+                icon_color: app.theme_cls.primary_color
+                on_release: root.volver_a_lista()
+
+            MDLabel:
+                text: "Detalles del Paciente"
+                font_style: "H5"
+                bold: True
+                halign: "left"
+                theme_text_color: "Custom"
+                text_color: app.theme_cls.primary_color
+                pos_hint: {"center_y": 0.5}
+
+            Widget:
+
+            MDIconButton:
+                icon: "refresh"
+                icon_size: "28sp"
+                size_hint_x: None
+                width: dp(48)
+                pos_hint: {"center_y": 0.5}
+                theme_icon_color: "Custom"
+                icon_color: app.theme_cls.primary_color
+                on_release: root.refresh()
+
+        # -- CONTENIDO PRINCIPAL: DOS COLUMNAS -----------------------
+        MDBoxLayout:
+            orientation: "horizontal"
+            spacing: 30
+            padding: [40, 1, 40, 40]
+
+            # --- COLUMNA IZQUIERDA: INFO + GRAFICA ------------------
+            MDBoxLayout:
+                orientation: "vertical"
+                size_hint_x: 0.45
+                spacing: 12
+
+                # ----- Tarjeta de informacion personal --------------
+                MDCard:
+                    orientation: "vertical"
+                    padding: 15
+                    spacing: 8
+                    radius: [12]
+                    elevation: 0.5
+                    size_hint_y: None
+                    height: 360
+
+                    MDLabel:
+                        text: "Informacion Personal"
+                        font_style: "H6"
+                        bold: True
+                        size_hint_y: None
+                        height: 28
+                        theme_text_color: "Custom"
+                        text_color: app.theme_cls.primary_dark
+
+                    MDSeparator:
+                        height: 1
+
+                    MDLabel:
+                        id: nombre_label
+                        text: "Nombre del Paciente"
+                        font_style: "Subtitle1"
+                        bold: True
+                        size_hint_y: None
+                        height: 26
+
+                    # Contadores: sesiones y trayectorias
+                    MDGridLayout:
+                        cols: 2
+                        size_hint_y: None
+                        height: 50
+                        spacing: 10
+
+                        MDBoxLayout:
+                            orientation: "vertical"
+                            MDLabel:
+                                text: "Sesiones"
+                                font_style: "Caption"
+                                halign: "center"
+                            MDLabel:
+                                id: contador_sesiones
+                                text: "0"
+                                font_style: "H6"
+                                bold: True
+                                halign: "center"
+                                theme_text_color: "Custom"
+                                text_color: app.theme_cls.primary_color
+
+                        MDBoxLayout:
+                            orientation: "vertical"
+                            MDLabel:
+                                text: "Trayectorias"
+                                font_style: "Caption"
+                                halign: "center"
+                            MDLabel:
+                                id: contador_trayectorias
+                                text: "0"
+                                font_style: "H6"
+                                bold: True
+                                halign: "center"
+                                theme_text_color: "Custom"
+                                text_color: app.theme_cls.primary_color
+
+                    MDSeparator:
+                        height: 1
+
+                    MDLabel:
+                        text: "Metricas promedio"
+                        font_style: "Subtitle2"
+                        bold: True
+                        size_hint_y: None
+                        height: 22
+                        theme_text_color: "Custom"
+                        text_color: app.theme_cls.primary_dark
+
+                    # Tabla 2x4 de metricas promedio
+                    MDGridLayout:
+                        cols: 2
+                        size_hint_y: None
+                        height: 90
+                        spacing: 4
+                        padding: [4, 0, 4, 0]
+
+                        MDLabel:
+                            text: "Errores:"
+                            font_style: "Body2"
+                        MDLabel:
+                            id: prom_errores
+                            text: "0.00"
+                            font_style: "Body2"
+                            bold: True
+                            halign: "right"
+
+                        MDLabel:
+                            text: "Estrellas:"
+                            font_style: "Body2"
+                        MDLabel:
+                            id: prom_estrellas
+                            text: "0.00"
+                            font_style: "Body2"
+                            bold: True
+                            halign: "right"
+
+                        MDLabel:
+                            text: "Tiempo:"
+                            font_style: "Body2"
+                        MDLabel:
+                            id: prom_tiempo
+                            text: "0.00 s"
+                            font_style: "Body2"
+                            bold: True
+                            halign: "right"
+
+                        MDLabel:
+                            text: "Tiempo dentro:"
+                            font_style: "Body2"
+                        MDLabel:
+                            id: prom_porcentaje
+                            text: "0.00 %"
+                            font_style: "Body2"
+                            bold: True
+                            halign: "right"
+
+                # ----- Tarjeta de grafica 3D ------------------------
+                MDCard:
+                    orientation: "vertical"
+                    padding: 10
+                    spacing: 6
+                    radius: [12]
+                    elevation: 0.5
+
+                    MDLabel:
+                        text: "Trayectoria de la sesion"
+                        font_style: "Subtitle1"
+                        bold: True
+                        size_hint_y: None
+                        height: 26
+                        theme_text_color: "Custom"
+                        text_color: app.theme_cls.primary_dark
+
+                    MDSeparator:
+                        height: 1
+
+                    # Contenedor donde se inserta el FigureCanvasKivyAgg
+                    MDBoxLayout:
+                        id: grafica_container
+                        orientation: "vertical"
+
+            # -- COLUMNA DERECHA: HISTORIAL DE SESIONES --------------
+            MDBoxLayout:
+                orientation: "vertical"
+                size_hint_x: 0.55
+                spacing: 20
+
+                MDBoxLayout:
+                    orientation: "horizontal"
+                    size_hint_y: None
+                    height: 50
+                    spacing: 20
+
+                    MDLabel:
+                        text: "Sesiones"
+                        font_style: "H5"
+                        bold: True
+                        size_hint_x: 0.7
+                        valign: "center"
+
+                    MDFlatButton:
+                        text: "Iniciar Sesion"
+                        size_hint_x: None
+                        width: 20
+                        pos_hint: {"center_y": 0.5}
+                        theme_text_color: "Custom"
+                        text_color: "white"
+
+                MDSeparator:
+                    height: 2
+
+                MDBoxLayout:
+                    orientation: "horizontal"
+                    padding: [15, 10]
+                    spacing: 0
+
+                    MDScrollView:
+                        do_scroll_x: False
+                        do_scroll_y: True
+                        bar_width: 5
+                        scroll_type: ["bars", "content"]
+
+                        MDBoxLayout:
+                            id: sesiones_list
+                            orientation: "vertical"
+                            spacing: 20
+                            padding: [10, 10]
+                            adaptive_height: True
+                            size_hint_y: None
+                            height: self.minimum_height
+
+# ----------------------------------------------------------------------
+# - PANTALLA DE INFORMACION  -------------------------------------------
+# ----------------------------------------------------------------------
+<Information>:
+    MDBoxLayout:
+        orientation: "vertical"
+
+        # -- BARRA SUPERIOR ---------------------------------------------
+        MDBoxLayout:
+            id: topbar
+            size_hint_y: None
+            height: dp(60)
+            orientation: "horizontal"
+            padding: [10, 10]
+            spacing: 10
+            md_bg_color: app.theme_cls.bg_light
+
+            MDLabel:
+                text: "Acerca del sistema"
+                font_style: "H5"
+                bold: True
+                halign: "left"
+                theme_text_color: "Custom"
+                text_color: app.theme_cls.primary_color
+                pos_hint: {"center_y": 0.5}
+
+        # -- CONTENIDO --------------------------------------------------
+        MDScrollView:
+            do_scroll_x: False
+            do_scroll_y: True
+            bar_width: 5
+
+            MDBoxLayout:
+                orientation: "vertical"
+                adaptive_height: True
+                size_hint_y: None
+                height: self.minimum_height
+                padding: [60, 30, 60, 30]
+                spacing: 18
+
+                # --- Tarjeta principal: nombre del sistema -------------
+                MDCard:
+                    orientation: "vertical"
+                    padding: 25
+                    spacing: 10
+                    radius: [12]
+                    elevation: 0.5
+                    size_hint_y: None
+                    adaptive_height: True
+
+                    MDLabel:
+                        text: "SIR-HAPT"
+                        font_style: "H4"
+                        bold: True
+                        halign: "center"
+                        size_hint_y: None
+                        height: 50
+                        theme_text_color: "Custom"
+                        text_color: app.theme_cls.primary_color
+
+                    MDLabel:
+                        text: "Sistema Inmersivo de Rehabilitacion con Realidad mixta y retroalimentacion HAPTica"
+                        font_style: "Subtitle1"
+                        halign: "center"
+                        italic: True
+                        size_hint_y: None
+                        height: 30
+                        theme_text_color: "Secondary"
+
+                    MDSeparator:
+                        height: 1
+
+                    MDLabel:
+                        text: "Aplicacion de gestion terapeutica que se conecta con un serious game desarrollado en Unity para la rehabilitacion de miembro superior."
+                        font_style: "Body1"
+                        halign: "center"
+                        size_hint_y: None
+                        height: self.texture_size[1] + 20
+                        padding: 10, 10
+
+                # --- Tarjeta: equipo del proyecto ----------------------
+                MDCard:
+                    orientation: "vertical"
+                    padding: 25
+                    spacing: 12
+                    radius: [12]
+                    elevation: 0.5
+                    size_hint_y: None
+                    adaptive_height: True
+
+                    MDLabel:
+                        text: "Desarrollo"
+                        font_style: "H6"
+                        bold: True
+                        size_hint_y: None
+                        height: 30
+                        theme_text_color: "Custom"
+                        text_color: app.theme_cls.primary_dark
+
+                    MDSeparator:
+                        height: 1
+
+                    MDLabel:
+                        text: "Autora del proyecto"
+                        font_style: "Caption"
+                        size_hint_y: None
+                        height: 20
+                        theme_text_color: "Secondary"
+
+                    MDLabel:
+                        text: "Alma Cristina Villanueva Guzman"
+                        font_style: "Body1"
+                        bold: True
+                        size_hint_y: None
+                        height: 26
+
+                # --- Tarjeta: asesoria academica -----------------------
+                MDCard:
+                    orientation: "vertical"
+                    padding: 25
+                    spacing: 12
+                    radius: [12]
+                    elevation: 0.5
+                    size_hint_y: None
+                    adaptive_height: True
+
+                    MDLabel:
+                        text: "Asesoria academica"
+                        font_style: "H6"
+                        bold: True
+                        size_hint_y: None
+                        height: 30
+                        theme_text_color: "Custom"
+                        text_color: app.theme_cls.primary_dark
+
+                    MDSeparator:
+                        height: 1
+
+                    MDLabel:
+                        text: "Asesora de tesis"
+                        font_style: "Caption"
+                        size_hint_y: None
+                        height: 20
+                        theme_text_color: "Secondary"
+
+                    MDLabel:
+                        text: "Dra. Irma Nayeli Angulo Sherman"
+                        font_style: "Body1"
+                        bold: True
+                        size_hint_y: None
+                        height: 26
+
+                    MDLabel:
+                        text: "Universidad de Monterrey"
+                        font_style: "Body2"
+                        size_hint_y: None
+                        height: 22
+                        theme_text_color: "Secondary"
+
+                # --- Tarjeta: colaboradores ----------------------------
+                MDCard:
+                    orientation: "vertical"
+                    padding: 25
+                    spacing: 12
+                    radius: [12]
+                    elevation: 0.5
+                    size_hint_y: None
+                    adaptive_height: True
+
+                    MDLabel:
+                        text: "Colaboradores"
+                        font_style: "H6"
+                        bold: True
+                        size_hint_y: None
+                        height: 30
+                        theme_text_color: "Custom"
+                        text_color: app.theme_cls.primary_dark
+
+                    MDSeparator:
+                        height: 1
+
+                    MDLabel:
+                        text: "Dr. Gabriel J. Garcia"
+                        font_style: "Body1"
+                        bold: True
+                        size_hint_y: None
+                        height: 26
+
+                    MDLabel:
+                        text: "Universidad de Alicante"
+                        font_style: "Body2"
+                        size_hint_y: None
+                        height: 22
+                        theme_text_color: "Secondary"
+
+                    Widget:
+                        size_hint_y: None
+                        height: 8
+
+                    MDLabel:
+                        text: "Dr. Andres Ubeda Castellanos"
+                        font_style: "Body1"
+                        bold: True
+                        size_hint_y: None
+                        height: 26
+
+                    MDLabel:
+                        text: "Universidad de Alicante"
+                        font_style: "Body2"
+                        size_hint_y: None
+                        height: 22
+                        theme_text_color: "Secondary"
+
+                # --- Tarjeta: instituciones ----------------------------
+                MDCard:
+                    orientation: "vertical"
+                    padding: 25
+                    spacing: 12
+                    radius: [12]
+                    elevation: 0.5
+                    size_hint_y: None
+                    adaptive_height: True
+
+                    MDLabel:
+                        text: "Instituciones participantes"
+                        font_style: "H6"
+                        bold: True
+                        size_hint_y: None
+                        height: 30
+                        theme_text_color: "Custom"
+                        text_color: app.theme_cls.primary_dark
+
+                    MDSeparator:
+                        height: 1
+
+                    MDLabel:
+                        text: "Universidad de Monterrey (UDEM)"
+                        font_style: "Body1"
+                        size_hint_y: None
+                        height: 26
+
+                    MDLabel:
+                        text: "Universidad de Alicante (UA)"
+                        font_style: "Body1"
+                        size_hint_y: None
+                        height: 26
+
+                # --- Pie de pantalla -----------------------------------
+                MDLabel:
+                    text: "SIR-HAPT 2026"
+                    font_style: "Caption"
+                    halign: "center"
+                    size_hint_y: None
+                    height: 30
+                    theme_text_color: "Hint"
+
+# ----------------------------------------------------------------------
+# - PANTALLA DE CONFIGURACION  -----------------------------------------
+# ----------------------------------------------------------------------
+<Configuration>:
+    MDLabel:
+        text: "Pantalla de confuracion..."
