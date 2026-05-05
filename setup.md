@@ -9,27 +9,23 @@ Instrucciones para crear nuevo proyecto con kivy y kivymd
     python --version
 
 3. Crear entorno virtual
-    python -m venv kivy_venv
+    python -m venv venv
 
 4. Permitir acceso
     Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 
 5. Activar entorno virtual
-    app_venv\Scripts\activate
+    venv\Scripts\activate
 
 6. Instalar kivy (Dejas que se decargue todo)
     python -m pip install "kivy[base]" kivy_examples
 
 7. Actualizar la cosa porque si no no funciona
     pip install --upgrade setuptools
+    python.exe -m pip install --upgrade pip
 
 8. Instalar kivy md (Dejas que se decargue todo)
-    pip install kivymd
-
-9. Instalar firebase (Dejas que se decargue todo)
-    pip install pyrebase4
-    pip install firebase-admin google-cloud-firestore
-    pip install kivy_garden.matplotlib
+    pip install kivymd pyrebase4 firebase-admin google-cloud-firestore kivy_garden.matplotlib
 
 10. Verificar lo que tienes instalado en el entorno virtual 
     pip list
@@ -44,7 +40,7 @@ Instrucciones para abrir un proyecto
     app_venv\Scripts\activate
     pip list
 
-3.  Activar el Run en el entorno virtual: Ctrl + Shift + P > Select Interpreter > selecciona el kivy_venv
+3.  Activar el Run en el entorno virtual: Ctrl + Shift + P > Select Interpreter > selecciona el venv
 
 Listoo, dale run y sigue editando c:
 

@@ -6,10 +6,11 @@ MDScreenManager:
     Dashboard:
         name: "dashboard"
 
-# ----------------------------------------------------------------------
-# ---------- PANTALLA DE INICIO DE SESION -----------------------------
-# ----------------------------------------------------------------------
+# ===========================================================================
+# = PANTALLA DE INICIO DE SESION ============================================
+# ===========================================================================
 <LogIn>:
+    # Tarjeta central 
     MDCard:
         size_hint: None, None
         size: 500, 650  
@@ -18,7 +19,8 @@ MDScreenManager:
         padding: 25
         spacing: 25
         orientation: 'vertical'
-    
+
+        # Titulo de inicio de sesion
         MDLabel:
             id: welcome_label
             text: "Gestor de terapias:\nInicio de sesión"
@@ -29,6 +31,7 @@ MDScreenManager:
             height: self.texture_size[1]
             padding_y: 15
         
+        # Ingresar correo
         MDTextField:
             id: user
             hint_text: "Correo electrónico"
@@ -38,11 +41,12 @@ MDScreenManager:
             font_size: 18
             pos_hint: {"center_x": 0.5}
         
+        # Ingresar contraseña con botones de ver/no ver
         MDRelativeLayout:
             size_hint_x: None
-            width: 400  # El mismo ancho que tenías en tu TextField
+            width: 400 
             size_hint_y: None
-            height: dp(48) # Altura estándar de un TextField
+            height: dp(48)
             pos_hint: {"center_x": 0.5}
             
             MDTextField:
@@ -61,6 +65,7 @@ MDScreenManager:
                 theme_text_color: "Hint" 
                 on_release: root.toggle_password_visibility()
 
+        # Parte inferior, botones de ayuda
         MDTextButton:
             text: "¿Olvidó su contraseña?"
             font_size: 20
@@ -84,6 +89,7 @@ MDScreenManager:
             size_hint_x: 0.8
             on_press: root.register_user()  
         
+        # Mensajes desplegables
         MDLabel:
             id: warning_label
             text: ""
@@ -95,15 +101,15 @@ MDScreenManager:
             theme_text_color: "Custom"
             text_color: 1, 0, 0, 1
 
-# ----------------------------------------------------------------------
-# ---------- DASHBOARD PRINCIPAL  ------------------------------------------
-# ----------------------------------------------------------------------
+# ===========================================================================
+# = DASHBOARD PRINCIPAL  ====================================================
+# ===========================================================================
 <Dashboard>:
     MDBoxLayout:
         orientation: 'horizontal'
         size: root.width, root.height
         
-        # - FIJA Barra de navegacion  -----------------------------------------     
+        # Barra fija de navegacion a la izquierda     
         MDNavigationRail:
             id: rail
             anchor: "top"
@@ -114,19 +120,13 @@ MDScreenManager:
             text_color_item_active: app.theme_cls.opposite_text_color
             md_bg_color: app.theme_cls.opposite_bg_light
 
+            # Agregar los iconos de las pantallas
             MDNavigationRailItem:
                 icon: "home"
                 text: "Inicio"
                 on_release: 
                     screen_manager2.current = "home"
                     screen_manager2.transition.direction = "right"
-
-            #MDNavigationRailItem:
-                #icon: "account"
-                #text: "Cuenta"
-                #on_release: 
-                #    screen_manager2.current = "conf"
-                #    screen_manager2.transition.direction ="right"
 
             MDNavigationRailItem:
                 icon: "account-details"
@@ -147,7 +147,7 @@ MDScreenManager:
                 text: "Salir Sesión"
                 on_release: root.logout()
         
-        # - Zona de Cambio de Pantallas MDScreenManager ------------------------
+        # Definir el cambio de pantallas con MDScreenManager 
         MDScreenManager:
             id: screen_manager2
             Home:
@@ -160,18 +160,15 @@ MDScreenManager:
                 name: "newpatient"
             Information:
                 name: "info"
-            Configuration:
-                name: "conf"
 
-# ----------------------------------------------------------------------
-# - PANTALLA DE INICIO  ------------------------------------------------
-# ----------------------------------------------------------------------
-# PTE - ARREGLAR BUGS DE DIMENSIONES
-<Home>:
+# ===========================================================================
+# = PANTALLA DE INICIO  =====================================================
+# ===========================================================================
+<Home>: 
     MDBoxLayout:
         orientation: "vertical"
 
-        # -- BARRA SUPERIOR ----------------------------------- PTE - ARREGLAR BUGS DE DIMENSIONES
+        # Barra superior con datos generales
         MDGridLayout:
             cols: 3
             padding: 50
@@ -181,7 +178,7 @@ MDScreenManager:
             height: 150
             md_bg_color: app.theme_cls.primary_light
 
-            # --- ICONO A LA IZQUIERDA ---------------------------
+            # Icono a la izquierda de la cuenta 
             AnchorLayout:
                 size_hint_x: 0.15
                 anchor_x: "center"
@@ -192,7 +189,7 @@ MDScreenManager:
                     color: app.theme_cls.text_color
 
 
-            # --- CONTENEDOR DE TEXTOS A LA DERECHA -------------------
+            # Contenedor de textos a la derecha
             GridLayout:
                 rows: 2   
                 spacing: 45
@@ -215,7 +212,7 @@ MDScreenManager:
                     halign: "left"
                     valign: "center"
             
-            # --- HORA Y FECHA  --------------------------------------  
+            # Hora y fecha  
             BoxLayout:
                 orientation: 'vertical'
                 size_hint: None, None
@@ -243,8 +240,7 @@ MDScreenManager:
                     size_hint_y: None
                     height: self.texture_size[1]
 
-        # -------- ZONA CENTRAL -------- PTE - ARREGLAR BUGS DE DIMENSIONES
-        # poner aqui las cards de ver pacientes, nuevo paciente o nueva sesion (por ahora, ver si lo dejo asi)!! ------------------------------------------      
+        # Zona central - menú rápido de las páginas
         MDBoxLayout:
             orientation: "vertical"
             spacing: 20
@@ -256,7 +252,7 @@ MDScreenManager:
                 font_style: "H5"
                 adaptive_height: True
             
-            # Ir a la pagina de pacientes -----------
+            # Ir a la pagina de pacientes
             MDCard:
                 orientation: "vertical"
                 size_hint_y: None
@@ -277,7 +273,7 @@ MDScreenManager:
                     font_style: "Caption"
                     adaptive_height: True
             
-            # Ir a la pagina de nuevo paciente -----------
+            # Ir a la pagina de nuevo paciente 
             MDCard:
                 orientation: "vertical"
                 size_hint_y: None
@@ -301,43 +297,18 @@ MDScreenManager:
             Widget:
                 size_hint_y: None
                 height: 160
-            
-            #MDLabel:
-            #    text: "Sesiones"
-            #    font_style: "H5"
-            #    adaptive_height: True
-            
-            # ??????????? -----------
-            #MDCard:
-            #    orientation: "vertical"
-            #    size_hint_y: None
-            #    height: dp(100)
-            #    padding: dp(16)
-            #    spacing: dp(8)
-            #    elevation: 2
-            #    ripple_behavior: True
-            #    # on_release: PENDIENTE - aun no se que ponerle
-                
-            #    MDLabel:
-            #        text: "Iniciar Sesión"
-            #        font_style: "H6"
-            #        adaptive_height: True
-                
-            #    MDLabel:
-            #        text: "Comenzar una nueva sesión de rehabilitación"
-            #        font_style: "Caption"
-            #        adaptive_height: True
 
-# ----------------------------------------------------------------------
-# - PANTALLA DE BÚSQUEDA  ------------------------------------------------
-# ----------------------------------------------------------------------
+# ===========================================================================
+# = PANTALLA DE BÚSQUEDA  ===================================================
+# ===========================================================================
 <Patients>:
     MDBoxLayout:
         orientation: "vertical"
         id: center_zone
         padding: 50
         spacing: 20
-
+        
+        # Barra superior para buscar y filrar
         MDBoxLayout:
             orientation: "horizontal"
             size_hint_y: None
@@ -365,7 +336,8 @@ MDScreenManager:
 
         Widget:
             size_hint_y: 0.05
-
+        
+        # Tarjeta central donde se despliega el listado de pacientes
         MDCard:
             size_hint: 0.95, 1
             size: 750, 450 
@@ -379,7 +351,7 @@ MDScreenManager:
                 orientation: "vertical"
                 spacing: 5
 
-                # --- Header con botón de refresh ---
+                # Encabezado con botón de actualizar
                 MDBoxLayout:
                     orientation: "horizontal"
                     size_hint_y: None
@@ -403,15 +375,14 @@ MDScreenManager:
                         icon_color: app.theme_cls.primary_color
                         on_release: root.cargar_pacientes()
 
-                # --- Lista de pacientes ---
+                # Lista de pacientes con scroll
                 MDScrollView:
                     MDList:
                         id: patients_list
 
-
-# ----------------------------------------------------------------------
-# - PANTALLA DE NUEVO PACIENTE   ---------------------------------------
-# ----------------------------------------------------------------------
+# ===========================================================================
+# = PANTALLA DE NUEVO PACIENTE   ============================================
+# ===========================================================================
 <New_Patient>:
     name: "newpatient"
     
@@ -424,14 +395,14 @@ MDScreenManager:
             padding: [40, 30]
             spacing: 30
             
-          # --- Formulario --------------------------
+          # Bloque central en donde estará el formulario
             MDBoxLayout:
                 orientation: 'vertical'
                 size_hint: 0.6, 1
                 padding: 5
                 spacing: 30
 
-                #------ Título------
+                # Título
                 MDLabel:
                     text: "Registrar Nuevo Paciente"
                     font_style: "H4"
@@ -441,7 +412,7 @@ MDScreenManager:
                     bold: True
                 
                 
-                # ------Campos del formulario ------
+                # Campos del formulario 
                 MDTextField:
                     id: nombre_field
                     hint_text: "Nombre(s) *"
@@ -491,57 +462,7 @@ MDScreenManager:
                     size_hint_y: None
                     height: 20
             
-          # -- Progrmacion de las sesiones --------------
-          #  FloatLayout:
-          #      size_hint_x: 0.4
-          #      
-          #      MDCard:
-          #          orientation: 'vertical'
-          #          size_hint: 0.95 , 0.3
-          #          pos_hint: {"center_x": 0.5, "center_y": 0.5}
-          #          padding: 25
-          #          spacing: 20
-           #         elevation: 3
-            #        radius: [15,]
-            #        
-            #        MDLabel:
-            #            text: "Sesiones Programadas"
-            #            font_style: "H6"
-            #            bold: True
-            #            halign: "center"
-            #            size_hint_y: None
-            #            height: 40
-            #        
-            #        # Contador de sesiones
-            #        MDBoxLayout:
-            #            orientation: 'horizontal'
-            #            size_hint_y: None
-            #            height: 80
-            #            spacing: 20
-            #            pos_hint: {"center_x": 0.5}
-            #            
-            #            MDIconButton:
-            #                icon: "minus-circle"
-            #                icon_size: "30sp"
-            #                pos_hint: {"center_y": 0.5}
-            #                on_release: root.decrementar_sesiones()
-            #            
-            #            MDLabel:
-            #                id: sesiones_label
-            #                text: "0"
-            #                font_style: "H5"
-            #                bold: True
-            #                halign: "center"
-            #                pos_hint: {"center_y": 0.5}
-            #            
-            #            MDIconButton:
-            #                icon: "plus-circle"
-            #                icon_size: "30sp"
-            #                pos_hint: {"center_y": 0.5}
-            #                on_release: root.incrementar_sesiones()
-                
-                    
-        # -- BARRA INFERIOR: Botones de acción -----------------------------------------------------------------
+        # Barra inferior con botones de guardar o cancelar
         MDBoxLayout:
             orientation: 'horizontal'
             size_hint_y: None
@@ -569,14 +490,14 @@ MDScreenManager:
                 md_bg_color: app.theme_cls.primary_color
                 on_release: root.guardar_paciente()
 
-# ----------------------------------------------------------------------
-# - PANTALLA DE PACIENTES  ---------------------------------------------
-# ----------------------------------------------------------------------
+# ===========================================================================
+# = PANTALLA DE PACIENTES  ==================================================
+# ===========================================================================
 <Details_Patient>:
     MDBoxLayout:
         orientation: "vertical"
 
-        # -- BARRA SUPERIOR CON BOTONES ------------------------------
+        # Barra superior con botones de refresh y regresar
         MDBoxLayout:
             id: topbar
             size_hint_y: None
@@ -617,19 +538,19 @@ MDScreenManager:
                 icon_color: app.theme_cls.primary_color
                 on_release: root.refresh()
 
-        # -- CONTENIDO PRINCIPAL: DOS COLUMNAS -----------------------
+        # Contenido principal en dos columnas
         MDBoxLayout:
             orientation: "horizontal"
             spacing: 30
             padding: [40, 1, 40, 40]
 
-            # --- COLUMNA IZQUIERDA: INFO + GRAFICA ------------------
+            # A la izquierda informacion y grafica
             MDBoxLayout:
                 orientation: "vertical"
                 size_hint_x: 0.45
                 spacing: 12
 
-                # ----- Tarjeta de informacion personal --------------
+                # Tarjeta de informacion personal 
                 MDCard:
                     orientation: "vertical"
                     padding: 15
@@ -756,7 +677,7 @@ MDScreenManager:
                             bold: True
                             halign: "right"
 
-                # ----- Tarjeta de grafica 3D ------------------------
+                # Tarjeta de grafica 3D 
                 MDCard:
                     orientation: "vertical"
                     padding: 10
@@ -781,7 +702,7 @@ MDScreenManager:
                         id: grafica_container
                         orientation: "vertical"
 
-            # -- COLUMNA DERECHA: HISTORIAL DE SESIONES --------------
+            # A la derecha el historial de sesiones
             MDBoxLayout:
                 orientation: "vertical"
                 size_hint_x: 0.55
@@ -831,14 +752,14 @@ MDScreenManager:
                             size_hint_y: None
                             height: self.minimum_height
 
-# ----------------------------------------------------------------------
-# - PANTALLA DE INFORMACION  -------------------------------------------
-# ----------------------------------------------------------------------
+# ===========================================================================
+# = PANTALLA DE INFORMACION  ================================================
+# ===========================================================================
 <Information>:
     MDBoxLayout:
         orientation: "vertical"
 
-        # -- BARRA SUPERIOR ---------------------------------------------
+        # Barra superior con información general
         MDBoxLayout:
             id: topbar
             size_hint_y: None
@@ -857,7 +778,7 @@ MDScreenManager:
                 text_color: app.theme_cls.primary_color
                 pos_hint: {"center_y": 0.5}
 
-        # -- CONTENIDO --------------------------------------------------
+        # Contenido 
         MDScrollView:
             do_scroll_x: False
             do_scroll_y: True
@@ -871,7 +792,7 @@ MDScreenManager:
                 padding: [60, 30, 60, 30]
                 spacing: 18
 
-                # --- Tarjeta principal: nombre del sistema -------------
+                # Nombre del sistema
                 MDCard:
                     orientation: "vertical"
                     padding: 25
@@ -911,7 +832,6 @@ MDScreenManager:
                         height: self.texture_size[1] + 20
                         padding: 10, 10
 
-                # --- Tarjeta: equipo del proyecto ----------------------
                 MDCard:
                     orientation: "vertical"
                     padding: 25
@@ -947,7 +867,6 @@ MDScreenManager:
                         size_hint_y: None
                         height: 26
 
-                # --- Tarjeta: asesoria academica -----------------------
                 MDCard:
                     orientation: "vertical"
                     padding: 25
@@ -990,7 +909,6 @@ MDScreenManager:
                         height: 22
                         theme_text_color: "Secondary"
 
-                # --- Tarjeta: colaboradores ----------------------------
                 MDCard:
                     orientation: "vertical"
                     padding: 25
@@ -1044,7 +962,6 @@ MDScreenManager:
                         height: 22
                         theme_text_color: "Secondary"
 
-                # --- Tarjeta: instituciones ----------------------------
                 MDCard:
                     orientation: "vertical"
                     padding: 25
@@ -1078,7 +995,7 @@ MDScreenManager:
                         size_hint_y: None
                         height: 26
 
-                # --- Pie de pantalla -----------------------------------
+                # Pie de pantalla
                 MDLabel:
                     text: "SIR-HAPT 2026"
                     font_style: "Caption"
@@ -1086,10 +1003,3 @@ MDScreenManager:
                     size_hint_y: None
                     height: 30
                     theme_text_color: "Hint"
-
-# ----------------------------------------------------------------------
-# - PANTALLA DE CONFIGURACION  -----------------------------------------
-# ----------------------------------------------------------------------
-<Configuration>:
-    MDLabel:
-        text: "Pantalla de confuracion..."

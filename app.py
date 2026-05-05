@@ -1,8 +1,18 @@
+'''
+SIR-HAPT - Aplicación para la gestión terapéutica
+Autora: Alma Cristina Villanueva Guzmán
+PEF - Ingeniería Biomédica
+'''
+# Instalar librerias
+import os
+import sys
+from datetime import datetime
+
+# KV
 from kivy.lang import Builder
 from kivymd.app import MDApp
 from kivy.clock import Clock
 from kivymd.uix.screen import MDScreen
-from datetime import datetime
 from kivymd.uix.list import TwoLineListItem
 from kivymd.uix.dialog import MDDialog
 from kivymd.uix.button import MDFlatButton
@@ -10,9 +20,8 @@ from kivymd.uix.card import MDCard
 from kivymd.uix.label import MDLabel
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivy.core.window import Window
-import os
-import sys
-# Para la grafica 3D embebida en KivyMD
+
+# Para graficar
 import matplotlib
 matplotlib.use("Agg")  # Backend no interactivo, evita conflictos con Kivy
 import matplotlib.pyplot as plt
@@ -21,14 +30,13 @@ from mpl_toolkits.mplot3d import Axes3D  # noqa: F401  (registra el proyector 3D
 from kivy_garden.matplotlib.backend_kivyagg import FigureCanvasKivyAgg
 import numpy as np
  
-
 # Firebase Auth y Firestore
 import pyrebase
 import firebase_admin
 from firebase_admin import credentials, firestore
 
+# Obtiene la ruta absoluta tanto en desarrollo como en ejecutable
 def resource_path(relative_path):
-    # Obtiene la ruta absoluta tanto en desarrollo como en ejecutable
     try:
         base_path = sys._MEIPASS  # Cuando corre como .exe
     except Exception:
@@ -37,12 +45,14 @@ def resource_path(relative_path):
     return os.path.join(base_path, relative_path)
 
 # Ruta dinámica al JSON
-cred_path = resource_path("sir-hapt-firebase-adminsdk-fbsvc-baadfe4250.json")
-cred_path2 = resource_path("serviceAccountKey_mrgame-pefii-v2-firebase-adminsdk.json")
+# Para usuarios de prueba voluntarios sanos
+px_cred_path = resource_path("sir-hapt-firebase-adminsdk-fbsvc-baadfe4250.json")
+# Para pruebas en ADACEA, pacientes
+users_cred_path = resource_path("serviceAccountKey_mrgame-pefii-v2-firebase-adminsdk.json")
 
 
 # Inicializar credenciales
-cred = credentials.Certificate(cred_path2)
+cred = credentials.Certificate(users_cred_path) # Seleccionar la credencial de la nube que se quiere visualizar
 firebase_admin.initialize_app(cred)
 
 db = firestore.client()
@@ -60,13 +70,13 @@ firebaseConfig = {
 firebase = pyrebase.initialize_app(firebaseConfig)
 auth = firebase.auth()
 
-# ---------------------------------------------------
-# ------------- INICIO DE SESION --------------------
-# ---------------------------------------------------
+# =================================================================
+# ======= INICIO DE SESION ========================================
+# =================================================================
 class LogIn(MDScreen):
-    
+
+    # Inicia sesión con Firebase
     def login(self):
-        # Inicia sesión con Firebase
         email = self.ids.user.text.strip() 
         password = self.ids.password.text   
 
@@ -178,50 +188,47 @@ class LogIn(MDScreen):
         # Limpia el mensaje de advertencia
         self.ids.warning_label.text = ""
 
-    def go_to_dashboard(self): # Moverse al dashboard
+    # Moverse al dashboard
+    def go_to_dashboard(self): 
         self.manager.current = "dashboard"
     
-    # Dentro de class LogIn(MDScreen):
-    
+    # Para ver o no la contraseña (ojito)
     def toggle_password_visibility(self):
         textfield = self.ids.password
         boton_ojo = self.ids.eye_btn
         #  invertir visibilidad 
         textfield.password = not textfield.password
-        
-        # 2. invertir el icono según el estado
+        # invertir el icono según el estado
         boton_ojo.icon = "eye" if not textfield.password else "eye-off"
 
-# ---------------------------------------------------
-# ---------- DASHBOARD CON NAVIGATION RAIL -----------
-# ---------------------------------------------------
+# =================================================================
+# ======= DASHBOARD CON NAVIGATION RAIL ===========================
+# =================================================================
 class Dashboard(MDScreen):
 
-    # -- Forzar cargar datos en Home
+    # Forzar cargar datos en Home
     def on_enter(self):
         internal_manager = self.ids.screen_manager2
         home_screen = internal_manager.get_screen('home')
         home_screen.cargar_info_terapeuta()
         
-    # -- Borrar los datos de IDTerapeuta local y regresar a Login ----------
+    #  Borrar los datos de IDTerapeuta local y regresar a Login 
     def logout(self):
         try:
             app = MDApp.get_running_app()
 
-            # 1. Limpiar estado a nivel de aplicacion
+            # Limpiar estado a nivel de aplicacion
             app.user_email = None
             app.user_uid = None
             app.paciente_actual = None
 
-            # 2. Resetear el screen manager interno del Dashboard a "home"
-            #    para que el proximo login muestre la pantalla principal
+            # Resetear el screen manager interno para que muestre la pantalla principal
             try:
                 self.ids.screen_manager2.current = "home"
             except Exception as e:
                 print(f"No se pudo resetear screen_manager2: {e}")
 
-            # 3. Limpiar los campos del LogIn para que el proximo usuario
-            #    no vea el correo/contrasena previos
+            # Limpiar los campos del LogIn 
             try:
                 login_screen = self.manager.get_screen("login")
                 if "user" in login_screen.ids:
@@ -233,7 +240,7 @@ class Dashboard(MDScreen):
             except Exception as e:
                 print(f"No se pudieron limpiar campos del login: {e}")
 
-            # 4. Volver al login (screen manager externo)
+            # Volver al login
             self.manager.transition.direction = "right"
             self.manager.current = "login"
 
@@ -242,9 +249,9 @@ class Dashboard(MDScreen):
             import traceback
             traceback.print_exc()
 
-# ----------------------------------------------------
-# ---------- PANTALLA DE HOME ------------------------
-# ----------------------------------------------------
+# =================================================================
+# ======= PANTALLA DE HOME ========================================
+# =================================================================
 class Home(MDScreen):
 
     def on_enter(self): # esperar tantito porque si no se traba
@@ -256,7 +263,7 @@ class Home(MDScreen):
         self.iniciar_reloj()
         print(f"IDs disponibles: {list(self.ids.keys())}")
 
-    # -- Obtener la información del terapeuta ------------------------------------------------
+    #  Obtener la información del terapeuta 
     def cargar_info_terapeuta(self):
         try:
             app = MDApp.get_running_app()
@@ -271,12 +278,12 @@ class Home(MDScreen):
             # Actualización directa
             self.ids.terapeuta_nombre.text = str(IDTerapeuta)
             self.ids.terapeuta_email.text = f"Correo: {email}"
-            print(f"Info actualizada manualmente: {IDTerapeuta}")
+            #print(f"Info actualizada manualmente: {IDTerapeuta}")
 
         except Exception as e:
             print(f"Error actualizando info: {e}")
 
-    # -- Reloj y hora --------------------------------------------------------------------------
+    #  Reloj y hora 
     def iniciar_reloj(self):
         def actualizar_tiempo(dt):
             try:
@@ -294,19 +301,17 @@ class Home(MDScreen):
         Clock.schedule_interval(actualizar_tiempo, 0.5)
         actualizar_tiempo(0)
 
-    # -- ir a pantalla de lista de pacientes  -----------------------------
     def ir_a_pacientes(self):
         self.manager.current = "patients"
         self.manager.transition.direction = "left"
 
-    # -- Abrir la pantalla de nuevo paciente  -----------------------------
     def abrir_nuevo_paciente(self):
         self.manager.current = "newpatient"
         self.manager.transition.direction = "left"
         
-# ----------------------------------------------------
-# ---------- PANTALLA DE BÚSQUEDA --------------------
-# ----------------------------------------------------
+# =================================================================
+# ======= PANTALLA DE BÚSQUEDA ====================================
+# =================================================================
 class Patients(MDScreen):
     pacientes_data = []  # Lista completa de pacientes
     
@@ -316,7 +321,7 @@ class Patients(MDScreen):
     def cargar_datos_inicio(self, dt):
         self.cargar_pacientes()
 
-    # -- Cargar pacientes desde Firestore -----------------------------------------------
+    #  Cargar pacientes desde Firestore 
     def cargar_pacientes(self):
         
         # Obtiene todos los pacientes de Firestore y los muestra en la lista
@@ -344,7 +349,7 @@ class Patients(MDScreen):
                         'datos': datos
                     })
                     
-                    print(self.pacientes_data) # ver la info
+                    # print(self.pacientes_data) # ver la info
 
                     # Crear item de lista
                     item = TwoLineListItem(
@@ -366,7 +371,7 @@ class Patients(MDScreen):
         except Exception as e:
             print(f"Error cargando pacientes: {e}")
     
-    # -- Buscar pacientes -------------------------------------------------------------
+    #  Buscar pacientes filtrando el listado
     def buscar_paciente(self, texto_busqueda):
         texto = texto_busqueda.lower().strip()
         
@@ -399,7 +404,7 @@ class Patients(MDScreen):
             )
             lista.add_widget(item)
     
-    # -- Ir a la pagina de pacientes ------------------------------------------------
+    #  Ir a la pagina de pacientes 
     def abrir_paciente(self, paciente_id):
         print(f"Abriendo paciente: {paciente_id}")
         
@@ -411,14 +416,14 @@ class Patients(MDScreen):
         self.manager.current = "details"
         self.manager.transition.direction = "left"
     
-    # -- Abrir la pantalla de nuevo paciente  -----------------------------
+    # Ir a la página para registrar un nuevo paciente 
     def abrir_nuevo_paciente(self):
         self.manager.current = "newpatient"
         self.manager.transition.direction = "left"
         
-# -----------------------------------------------------
-# ---------- PANTALLA DE NUEVO  PACIENTE  ------------
-# ----------------------------------------------------
+# =================================================================
+# ======= PANTALLA DE NUEVO  PACIENTE  ============================
+# =================================================================
 class New_Patient(MDScreen):
     
     sesiones_programadas = 0  # Valor inicial
@@ -429,7 +434,7 @@ class New_Patient(MDScreen):
         # Se ejecuta al entrar a la pantalla
         self.limpiar_formulario()
 
-    # -- Guardar paciente ------------------------------------------------------------------------------------------------
+    #  Guardar paciente 
     def guardar_paciente(self):
         try:
             # Obtener datos del formulario
@@ -450,7 +455,6 @@ class New_Patient(MDScreen):
                 return
             
             # Crear ID del paciente (NombreApellido)
-            #paciente_id = f"{nombre}{apellido}".replace(" ", "")
             nombre = nombre.strip()
             apellido = apellido.strip()
             # 3 primeras letras del nombre y apellido
@@ -460,7 +464,6 @@ class New_Patient(MDScreen):
             solo_numeros_fecha = "".join([c for c in fecha_nacimiento if c.isdigit()])
             # Construir ID final
             paciente_id = f"{parte_nombre}{parte_apellido}{solo_numeros_fecha}"
-            #---------------
             
             # Verificar si ya existe
             doc_ref = db.collection("Pacientes").document(paciente_id)
@@ -508,13 +511,13 @@ class New_Patient(MDScreen):
             traceback.print_exc()
             self.mostrar_mensaje("Error", f"No se pudo guardar el paciente:\n{str(e)}")
     
-    # -- Cancelar -> limpiar campos y regresar a home ---------------------------------
+    # Para cancelar limpiar campos y regresar a home 
     def cancelar(self):
         self.limpiar_formulario()
         self.manager.current="patients"
         self.manager.transition.direction = "right"
 
-    # -- Limpia todos los campos del formulario---------------------------------
+    # Limpia todos los campos del formulario
     def limpiar_formulario(self):
         
         self.ids.nombre_field.text = ""
@@ -526,7 +529,7 @@ class New_Patient(MDScreen):
         self.ids.nombre_field.error = False
         self.ids.apellido_field.error = False
     
-    # -- Mensajesss de dialogo ---------------------------------
+    #  Mensajesss de dialogo 
     def mostrar_mensaje(self, titulo, texto, callback=None):
         if not self.dialog:
             self.dialog = MDDialog(
@@ -555,17 +558,17 @@ class New_Patient(MDScreen):
         if callback:
             callback()
 
-# --------------------------------------------------------
-# ---------- PANTALLA DE PACIENTE  ----------------------
-# -------------------------------------------------------
+# =================================================================
+# ======= PANTALLA DE PACIENTE  ===================================
+# =================================================================
 class Details_Patient(MDScreen):
     paciente_id = None
     datos_paciente = {}
     sesiones_lista = []
-    trayectorias_cache = {}   # cache local: {trayectoria_id: [puntos]}
-    canvas_grafica = None     # referencia al canvas matplotlib actual
+    trayectorias_cache = {} # cache local: {trayectoria_id: [puntos]}
+    canvas_grafica = None # referencia al canvas matplotlib actual
 
-    # Paleta SIR-HAPT
+    # Paletade colores a usar (combinen con la app)
     COLOR_TERAPEUTA = "#000000"
     COLOR_PACIENTE = "#0097a9"
 
@@ -575,7 +578,7 @@ class Details_Patient(MDScreen):
     def on_enter(self):
         Clock.schedule_once(self.cargar_datos_paciente, 0.1)
 
-    # - Cargar datos desde firestore  -------------------------------------
+    # Cargar datos desde firestore  
     def cargar_datos_paciente(self, dt=None):
         try:
             app = MDApp.get_running_app()
@@ -590,9 +593,9 @@ class Details_Patient(MDScreen):
 
             if doc.exists:
                 self.datos_paciente = doc.to_dict()
-                self.cargar_sesiones()           # llena self.sesiones_lista
+                self.cargar_sesiones() # llena self.sesiones_lista
                 self.cargar_trayectorias_cache() # llena self.trayectorias_cache
-                self.mostrar_datos()             # depende de los dos anteriores
+                self.mostrar_datos() # depende de los dos anteriores
                 self.mostrar_grafica_vacia()
             else:
                 print(f"No se encontro el paciente: {self.paciente_id}")
@@ -602,7 +605,7 @@ class Details_Patient(MDScreen):
             import traceback
             traceback.print_exc()
 
-    # - Cargar trayectorias del terapeuta a cache local  -------------------
+    # Cargar trayectorias del terapeuta a cache local  
     def cargar_trayectorias_cache(self):
         try:
             self.trayectorias_cache = {}
@@ -614,11 +617,11 @@ class Details_Patient(MDScreen):
                     data = doc.to_dict()
                     puntos = data.get("TrayectoriaCompleta", [])
                     self.trayectorias_cache[doc.id] = puntos
-            print(f"Trayectorias en cache: {len(self.trayectorias_cache)}")
+            # print(f"Trayectorias en cache: {len(self.trayectorias_cache)}")
         except Exception as e:
             print(f"Error cargando trayectorias: {e}")
 
-    # - Actualizar info personal y metricas promedio  ---------------------
+    # Actualizar info personal y metricas promedio 
     def mostrar_datos(self):
         try:
             nombre = self.datos_paciente.get('Nombre', '')
@@ -645,7 +648,7 @@ class Details_Patient(MDScreen):
             import traceback
             traceback.print_exc()
 
-    # - Calcular promedios globales de metricas  --------------------------
+    # Calcular promedios globales de metricas 
     def calcular_metricas_promedio(self):
         promedios = {'errores': 0.0, 'estrellas': 0.0,
                      'tiempo': 0.0, 'porcentaje': 0.0}
@@ -665,13 +668,13 @@ class Details_Patient(MDScreen):
             suma_tiempo     += float(s.get('TotalTime', 0) or 0)
             suma_porcentaje += float(s.get('InsideTimePercentage', 0) or 0)
 
-        promedios['errores']    = suma_errores / n
-        promedios['estrellas']  = suma_estrellas / n
-        promedios['tiempo']     = suma_tiempo / n
+        promedios['errores'] = suma_errores / n
+        promedios['estrellas'] = suma_estrellas / n
+        promedios['tiempo'] = suma_tiempo / n
         promedios['porcentaje'] = suma_porcentaje / n
         return promedios
 
-    # - Descargar las metricas de las sesiones  ---------------------------
+    # Descargar las metricas de las sesiones  
     def cargar_sesiones(self):
         try:
             self.ids.sesiones_list.clear_widgets()
@@ -692,9 +695,8 @@ class Details_Patient(MDScreen):
 
             sesion_count = len(self.sesiones_lista)
 
-            # Numeracion cronologica: la sesion mas antigua = #1
-            # Como la lista esta en orden descendente (mas reciente primero),
-            # asignamos numero = total - indice
+            # La sesion mas antigua es la #1
+            # La lista esta en orden descendente, invertir
             for i, sesion_data in enumerate(self.sesiones_lista):
                 numero_cronologico = sesion_count - i
                 self.agregar_sesion_card(sesion_data, numero_cronologico)
@@ -721,7 +723,7 @@ class Details_Patient(MDScreen):
             import traceback
             traceback.print_exc()
 
-    # - Mostrar en la tarjeta las sesiones como lista ---------------------
+    # Mostrar en la tarjeta las sesiones como lista 
     def agregar_sesion_card(self, sesion_data, numero_sesion):
         METRIC_NAMES = {
             "InsideTimePercentage": "Tiempo dentro de la trayectoria",
@@ -734,7 +736,7 @@ class Details_Patient(MDScreen):
         CAMPOS_EXCLUIDOS = ["DateTime", "IDSesion", "CantidadPuntosPaciente",
                             "TrayectoriaPaciente", "id"]
 
-        # tarjeta principal: clicable
+        # tarjeta principal para presionar
         card = MDCard(
             orientation="vertical",
             size_hint_y=None,
@@ -831,9 +833,7 @@ class Details_Patient(MDScreen):
 
                 if isinstance(value, float):
                     if key == "radio":
-                        # Bug previo: usaba valor_formateado antes de definirlo.
-                        # Corregido: convertir el valor a cm y luego formatear.
-                        value_cm = value * 100
+                        value_cm = value * 100 # Formato de cm
                         valor_formateado = f"{value_cm:.2f}"
                     else:
                         valor_formateado = f"{value:.2f}"
@@ -890,7 +890,7 @@ class Details_Patient(MDScreen):
 
         self.ids.sesiones_list.add_widget(card)
 
-    # - Click en tarjeta de sesion: graficar  -----------------------------
+    # Click en tarjeta de sesion: graficar  
     def seleccionar_sesion(self, sesion_data):
         try:
             id_traj = sesion_data.get("Trayectoria", None)
@@ -904,7 +904,7 @@ class Details_Patient(MDScreen):
             import traceback
             traceback.print_exc()
 
-    # - Procesamiento de trayectorias  ------------------------------------
+    # Procesamiento de trayectorias  
     def _puntos_a_array(self, puntos):
         if not puntos:
             return np.empty((0, 3))
@@ -936,7 +936,7 @@ class Details_Patient(MDScreen):
             suav[:, i] = np.convolve(arr[:, i], kernel, mode='same')
         return suav
 
-    # - Renderizado de la grafica  ----------------------------------------
+    # Renderizado de la grafica  
     def mostrar_grafica_vacia(self):
         fig = Figure(figsize=(5, 4), dpi=100)
         ax = fig.add_subplot(111, projection='3d')
@@ -952,16 +952,6 @@ class Details_Patient(MDScreen):
                               id_traj, id_sesion):
         arr_t = self._puntos_a_array(puntos_terapeuta)
         arr_p = self._puntos_a_array(puntos_paciente)
-        
-        # === DIAGNOSTICO ===
-        print(f"[DIBUJO] Sesion={id_sesion}  TrayID={id_traj}")
-        if arr_t.size > 0:
-            print(f"  Terapeuta: {len(arr_t)} pts | "
-                  f"primer={arr_t[0]} | ultimo={arr_t[-1]} | "
-                  f"hash_aprox={hash(arr_t.tobytes())}")
-        if arr_p.size > 0:
-            print(f"  Paciente:  {len(arr_p)} pts | "
-                  f"primer={arr_p[0]} | ultimo={arr_p[-1]}")
 
         arr_t = self._sincronizar_origen(arr_t)
         arr_p = self._sincronizar_origen(arr_p)
@@ -1015,7 +1005,7 @@ class Details_Patient(MDScreen):
         self.canvas_grafica = FigureCanvasKivyAgg(fig)
         contenedor.add_widget(self.canvas_grafica)
 
-    # - Navegacion y dialogos  --------------------------------------------
+    # Navegacion y dialogos 
     def volver_a_lista(self):
         self.manager.current = "patients"
         self.manager.transition.direction = "right"
@@ -1041,18 +1031,17 @@ class Details_Patient(MDScreen):
     def refresh(self):
         self.cargar_datos_paciente()
 
-# --------------------------------------------------------
-# ---------- PANTALLAS DEL INFORMACION -------------------
-# -------------------------------------------------------
+# =================================================================
+# ======= PANTALLA DEL INFORMACION ================================
+# =================================================================
 class Information(MDScreen):
-    pass
-# --------------------------------------------------------
-# ---------- PANTALLAS DEL CONFIGURACION -------------------
-# -------------------------------------------------------
-class Configuration(MDScreen):
+    # Solo se visualliza, no interactua.
+    # Revisar app.kv <Information>
     pass
 
-# BUILD
+# =================================================================
+# ======= BUILD ===================================================
+# =================================================================
 def resource_path(relative_path):
     if hasattr(sys, '_MEIPASS'):
         return os.path.join(sys._MEIPASS, relative_path)
