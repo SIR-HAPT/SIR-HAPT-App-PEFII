@@ -1,10 +1,8 @@
 # SIR-HAPT App — Gestión Terapéutica
 
-Aplicación de escritorio para la gestión terapéutica del sistema **SIR-HAPT** (*Sistema Inmersivo con Retroalimentación Háptica para Terapia*). Desarrollada en Python con KivyMD y respaldada por Firebase Firestore y Authentication, permite al terapeuta registrar pacientes, configurar sesiones y consultar las métricas de desempeño generadas durante cada sesión en el serious game de realidad mixta.
+Aplicación de escritorio para la gestión terapéutica del sistema **SIR-HAPT** (*Sistema Inmersivo de Rehabilitación con Retroalimentación Háptica*). Desarrollada en Python con KivyMD y respaldada por Firebase Firestore y Authentication, permite al terapeuta registrar pacientes, configurar sesiones y consultar las métricas de desempeño generadas durante cada sesión en el serious game de realidad mixta.
 
-> Este repositorio forma parte del Proyecto de Evaluación Final de la Licenciatura en Ingeniería Biomédica — Universidad de Monterrey (UDEM), desarrollado en colaboración con el grupo **Human Robotics (HuRo Lab)** de la Universidad de Alicante.
-
----
+> Este repositorio forma parte del Proyecto de Evaluación Final de la Licenciatura en Ingeniería Biomédica — Universidad de Monterrey (UDEM), desarrollado en colaboración con el grupo **Human Robotics (HuRo)** de la Universidad de Alicante.
 
 ## Funcionalidades principales
 
@@ -14,11 +12,12 @@ Aplicación de escritorio para la gestión terapéutica del sistema **SIR-HAPT**
 - Consulta de información clínica por paciente
 - Revisión de métricas y desempeño por sesión terapéutica
 
----
 
 ## Mapa de navegación
-![Mapa de navegación](images/MapaNavegacionAPP_4README.png)
----
+<p align="center">
+  <img src="images/MapaNavegacionAPP_4README.png" width="400"/>
+</p>
+
 
 ## Estructura del proyecto
 
@@ -27,7 +26,6 @@ Aplicación de escritorio para la gestión terapéutica del sistema **SIR-HAPT**
 - **`requirements.txt`**: Lista de dependencias del proyecto.
 - **`SIR-HAPT_Manager.spec`**: Configuración para generar el ejecutable con PyInstaller.
 
----
 
 ## Requisitos previos
 
@@ -38,7 +36,6 @@ Aplicación de escritorio para la gestión terapéutica del sistema **SIR-HAPT**
 
 > ⚠️ Al instalar Python, asegúrate de marcar la opción **"Add Python to PATH"**
 
----
 
 ## Credenciales
 
@@ -46,16 +43,13 @@ La aplicación requiere dos archivos de credenciales de Firebase que **no están
 
 | Archivo | Descripción |
 |---|---|
-| `sir-hapt-firebase-adminsdk-fbsvc-baadfe4250.json` | Base de datos de usuarios de prueba (sujetos sanos) |
-| `serviceAccountKey_mrgame-pefii-v2-firebase-adminsdk.json` | Base de datos de pacientes (pruebas clínicas en ADACEA) |
+| `sir-hapt-firebase-adminsdk-fbsvc-baadfe4250.json` | Base de datos de usuarios de prueba (usuarios sanos) |
+| `serviceAccountKey_mrgame-pefii-v2-firebase-adminsdk.json` | Base de datos de pacientes (pruebas en ADACEA) |
 
 Ambos archivos deben colocarse en la carpeta raíz del proyecto antes de ejecutar la aplicación. Consulta la sección [Configuración de Firebase](#configuración-de-firebase) para generarlos desde tu propio proyecto.
 
----
 
 ## Configuración de Firebase
-
-Si deseas conectar la aplicación a tu propio proyecto de Firebase:
 
 1. Crea un proyecto en [Firebase Console](https://console.firebase.google.com/)
 2. Activa **Firestore Database** en modo de producción o prueba
@@ -66,20 +60,23 @@ Si deseas conectar la aplicación a tu propio proyecto de Firebase:
 
 La estructura esperada en Firestore es:
 
-```
-Pacientes/
-  {UserId}/
-    Trayectorias/
-      {idTraj}/
-        TrayectoriaCompleta: [ {x, y, z}, ... ]
-    Sesiones/
-      {IdSession}/
-        TrayectoriaPaciente: [ {x, y, z}, ... ]
-```
+<p align="center">
+  <img src="images/EstructuraFirebase_4README.png" width="600"/>
+</p>
 
----
 
-## Instalación y configuración
+## ⬇️ Descarga rápida del ejecutable
+ 
+Si solo se quiere usar la aplicación sin modificarla, se puede descargar directamente el ejecutable:
+ 
+**[Descargar SIR-HAPT.exe](https://github.com/SIR-HAPT/SIR-HAPT-App-PEFII/blob/main/dist/SIR-HAPT.exe)**
+ 
+> ⚠️ Antes de ejecutarlo necesitas contar con el archivo de credenciales en la misma carpeta del proyecto. 
+ 
+Si Windows bloquea el archivo al abrirlo, consulta la sección [Si Windows bloquea el archivo](#️-si-windows-bloquea-el-archivo) más abajo.
+
+
+## ⚙️ Instalación y configuración
 
 ### 1. Clonar el repositorio
 
@@ -125,9 +122,8 @@ pip list
 ```
 Deberían aparecer en la lista: `Kivy`, `kivymd`, `pyinstaller`, `firebase-admin`, entre otros.
 
----
 
-## Ejecutar la aplicación
+## ▶️ Ejecutar la aplicación
 
 ### Desde VS Code
 
@@ -147,9 +143,7 @@ Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 python app.py
 ```
 
----
-
-## Generar el ejecutable (.exe)
+### Generar el ejecutable (.exe)
 
 Una vez configurado el entorno:
 
@@ -163,7 +157,7 @@ El proceso tarda unos minutos. Al finalizar, el ejecutable estará en:
 dist/SIR-HAPT_Manager.exe
 ```
 
-### Si Windows bloquea el archivo
+### ⚠️ Si Windows bloquea el archivo
 
 Es normal que Windows muestre una advertencia la primera vez:
 
@@ -175,7 +169,6 @@ Si el antivirus elimina el archivo:
 1. Abre tu antivirus → **"Historial de amenazas"** o **"Cuarentena"**
 2. Busca `SIR-HAPT_Manager.exe` → **"Restaurar"** o **"Permitir"**
 
----
 
 ## Solución de errores comunes
 
