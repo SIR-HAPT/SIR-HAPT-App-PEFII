@@ -4,7 +4,7 @@ Aplicación de escritorio para la gestión terapéutica del sistema **SIR-HAPT**
 
 > Este repositorio forma parte del Proyecto de Evaluación Final de la Licenciatura en Ingeniería Biomédica — Universidad de Monterrey (UDEM), desarrollado en colaboración con el grupo **Human Robotics (HuRo)** de la Universidad de Alicante.
 
-## Funcionalidades principales
+## 🔎 Funcionalidades principales
 
 - Autenticación de terapeuta mediante Firebase Authentication
 - Registro y gestión de nuevos pacientes
@@ -19,7 +19,7 @@ Aplicación de escritorio para la gestión terapéutica del sistema **SIR-HAPT**
 </p>
 
 
-## Estructura del proyecto
+## 🔧 Estructura del proyecto
 
 - **`app.py`**: Lógica principal del programa — autenticación, conexión a Firebase, manejo de datos y navegación entre pantallas.
 - **`app.kv`**: Archivo de interfaz visual — define botones, colores, formularios y la disposición de cada pantalla.
@@ -27,7 +27,7 @@ Aplicación de escritorio para la gestión terapéutica del sistema **SIR-HAPT**
 - **`SIR-HAPT_Manager.spec`**: Configuración para generar el ejecutable con PyInstaller.
 
 
-## Requisitos previos
+## ℹ️ Requisitos previos
 
 - Windows 10 o superior
 - Python 3.10 o superior → [Descargar aquí](https://www.python.org/downloads/)
@@ -37,7 +37,7 @@ Aplicación de escritorio para la gestión terapéutica del sistema **SIR-HAPT**
 > ⚠️ Al instalar Python, asegúrate de marcar la opción **"Add Python to PATH"**
 
 
-## Credenciales
+## 🔴 Credenciales
 
 La aplicación requiere dos archivos de credenciales de Firebase que **no están incluidos en este repositorio por motivos de privacidad**:
 
@@ -49,7 +49,7 @@ La aplicación requiere dos archivos de credenciales de Firebase que **no están
 Ambos archivos deben colocarse en la carpeta raíz del proyecto antes de ejecutar la aplicación. Consulta la sección [Configuración de Firebase](#configuración-de-firebase) para generarlos desde tu propio proyecto.
 
 
-## Configuración de Firebase
+## ⚙️ Configuración de Firebase
 
 1. Crea un proyecto en [Firebase Console](https://console.firebase.google.com/)
 2. Activa **Firestore Database** en modo de producción o prueba
@@ -106,6 +106,7 @@ python -m venv venv
 
 3. Activar el entorno virtual:
 ```bash
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 .\venv\Scripts\Activate.ps1
 ```
 > Sabrás que está activo porque verás `(venv)` al inicio de la terminal.
@@ -178,6 +179,7 @@ Si la aplicación no inicia correctamente, reinstala el entorno virtual:
 deactivate
 rm -r venv
 python -m venv venv
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 venv\Scripts\activate
 pip install -r requirements.txt
 ```
